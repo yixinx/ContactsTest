@@ -16,7 +16,7 @@ public class MyProvider extends ContentProvider {
     public static final int BOOK_ITEM = 1;
     public static final int CATEGORY_DIR = 2;
     public static final int CATEGORY_ITEM = 3;
-    public static final String AUTHORITY = "com.example.contactstest.provider";
+    public static final String AUTHORITY = "com.example.yixinx.contactstest.provider";
     private static UriMatcher uriMatcher;
     private MyDatabaseHelper dbHelper;
 
@@ -69,13 +69,13 @@ public class MyProvider extends ContentProvider {
     public String getType(Uri uri) {
         switch (uriMatcher.match(uri)) {
             case BOOK_DIR:
-                return "vnd.android.cursor.dir/vnd.com.example.contactstest.provider.book";
+                return "vnd.android.cursor.dir/vnd.com.example.yixinx.contactstest.provider.book";
             case BOOK_ITEM:
-                return "vnd.android.cursor.item/vnd.com.example.contactstest.provider.book";
+                return "vnd.android.cursor.item/vnd.com.example.yixinx.contactstest.provider.book";
             case CATEGORY_DIR:
-                return "vnd.android.cursor.dir/vnd.com.example.contactstest.provider.category";
+                return "vnd.android.cursor.dir/vnd.com.example.yixinx.contactstest.provider.category";
             case CATEGORY_ITEM:
-                return "vnd.android.cursor.item/vnd.com.example.contactstest.provider.category";
+                return "vnd.android.cursor.item/vnd.com.example.yixinx.contactstest.provider.category";
         }
         return null;
     }
