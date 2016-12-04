@@ -1,53 +1,93 @@
 package com.example.yixinx.contactstest;
 
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    ListView contactsView;
-    ArrayAdapter<String> adapter;
-    List<String> contactsList = new ArrayList<String>();
+    private String newId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        contactsView = (ListView)findViewById(R.id.contacts_view);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, contactsList);
-        contactsView.setAdapter(adapter);
-        readContacts();
-    }
-
-    private void readContacts(){
-        Cursor cursor = null;
-        try{
-            cursor = getContentResolver().query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
-            while(cursor.moveToNext()){
-                //Get contact name
-                String contactName = cursor.getString(cursor.getColumnIndex(
-                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
-                ));
-                //Get contact phone number
-                String contactNumber = cursor.getString(cursor.getColumnIndex(
-                        ContactsContract.CommonDataKinds.Phone.NUMBER
-                ));
-                contactsList.add(contactName + "\n" + contactNumber);
+        Button addData = (Button) findViewById(R.id.add_data);
+        addData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            // 添加数据
+                Uri uri = Uri.parse("content://com.example.yixinx.contactstest.provider/book");
+                        ContentValues values = new ContentValues();
+                values.put("name", "A Clash of Kings");
+                values.put("author", "George Martin");
+                values.put("pages", 1040);
+                values.put("price", 22.85);
+                Uri newUri = getContentResolver().insert(uri, values);
+                newId = newUri.getPathSegments().get(1);
             }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        finally {
-            if(cursor != null)
-                cursor.close();
-        }
+        });
+
+        Button queryData = (Button) findViewById(R.id.query_data);
+        queryData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 查询数据
+                Uri uri = Uri.parse("content://com.example.yixinx.contactstest.provider/book");
+                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+                if (cursor != null) {
+                    while (cursor.moveToNext()) {
+                        String name = cursor.getString(cursor.
+                                getColumnIndex("name"));
+                        String author = cursor.getString(cursor.
+                                getColumnIndex("author"));
+                        int pages = cursor.getInt(cursor.getColumnIndex
+                                ("pages"));
+                        double price = cursor.getDouble(cursor.
+                                getColumnIndex("price"));
+                        Log.d("MainActivity", "book name is " + name);
+                        Log.d("MainActivity", "book author is " + author);
+                        Log.d("MainActivity", "book pages is " + pages);
+                        Log.d("MainActivity", "book price is " + price);
+                    }
+                    cursor.close();
+                }
+            }
+        });
+
+        Button updateData = (Button) findViewById(R.id.update_data);
+        updateData.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+                // 更新数据
+                Uri uri = Uri.parse("content://com.example.yixinx.contactstest.provider/book/" + newId);
+                ContentValues values = new ContentValues();
+                values.put("name", "A Storm of Swords");
+                values.put("pages", 1216);
+                values.put("price", 24.05);
+                getContentResolver().update(uri, values, null, null);
+                }
+        });
+
+        Button deleteData = (Button) findViewById(R.id.delete_data);
+        deleteData.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+            // 删除数据
+                    Uri uri = Uri.parse("content://com.example.yixinx.contactstest.provider/book/" + newId);
+                    getContentResolver().delete(uri, null, null);
+            }
+        });
     }
 }
